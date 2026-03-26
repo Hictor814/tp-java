@@ -7,17 +7,12 @@ pipeline {
     PORT_HOTE = '8082' // Le port sur lequel on accèdera au site
   }
   stages {
-    stage('Build') { 
+    stage('Build Image Docker') {
         steps {
-            sh 'mvn -B -DskipTests clean package' 
+        echo 'Construction de l\'image Docker en local...'
+        // Le point (.) à la fin indique à Docker de chercher le Dockerfile dans le dossier courant
+        sh 'docker build -t ${IMAGE_NAME} .'
         }
     }
-    stage('Build Image Docker') {
-    steps {
-      echo 'Construction de l\'image Docker en local...'
-      // Le point (.) à la fin indique à Docker de chercher le Dockerfile dans le dossier courant
-      sh 'docker build -t ${IMAGE_NAME} .'
-     }
-   }
   }
 }
