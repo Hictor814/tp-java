@@ -26,10 +26,4 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            // Remontée et automatisation des rapports dans l'interface Jenkins
-            junit '**/target/surefire-reports/*.xml'
-        }
-    }
 }
