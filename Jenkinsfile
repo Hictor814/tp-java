@@ -25,5 +25,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                // Utilisation stricte du Credentials Provider pour masquer les données sensibles
+                withCredentials([usernamePassword(credentialsId:'tomcat-credentials', usernameVariable:'TOMCAT_USER', passwordVariable: 'TOMCAT_PASS')])
+                {
+                    sh 'deploy_tomcat.sh --user $TOMCAT_USER --password $TOMCAT_PASS --file target/monapp.war'
+                }
+            }
+        }
     }
 }
