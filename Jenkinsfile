@@ -1,18 +1,43 @@
 pipeline {
-  agent any
-  environment {
-    // Définition de variables pour le nommage
-    IMAGE_NAME = 'mon-image-web-locale'
-    CONTAINER_NAME = 'mon-conteneur-web-local'
-    PORT_HOTE = '8082' // Le port sur lequel on accèdera au site
-  }
-  stages {
-    stage('Build Image Docker') {
-        steps {
-        echo 'Construction de l\'image Docker en local...'
-        // Le point (.) à la fin indique à Docker de chercher le Dockerfile dans le dossier courant
-        sh 'docker build -t ${IMAGE_NAME} .'
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                // Récupération du code source
+                checkout scm
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                // Exécution des tests unitaires
+                sh 'mvn test'
+            }
+        }
+        
+
+        stage('SonarScanner') {
+            steps {
+                // Transmission des métriques analytiques au serveur SonarQube
+                withSonarQubeEnv('ServeurSonarQubeTP') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                // Frontière automatisée et intraitable
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
         }
     }
-  }
+    post {
+        always {
+            // Remontée et automatisation des rapports dans l'interface Jenkins
+            junit '**/target/surefire-reports/*.xml'
+        }
+    }
 }
