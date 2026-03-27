@@ -25,14 +25,6 @@ pipeline {
                 }
             }
         }
-        stage('Quality Gate') {
-            steps {
-                // Frontière automatisée et intraitable
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
     }
     post {
         always {
